@@ -24,15 +24,31 @@
 </main>
 <script>
   (function () {
-    var raw = "";
-    try { raw = decodeURIComponent(location.hash.slice(1)); } catch (e) { raw = location.hash.slice(1); }
-    raw = raw.trim().replace(/^<|>$/g, "");
-    var btn = document.getElementById("go"), note = document.getElementById("note");
-    if (!raw || raw.indexOf("@") < 0) { btn.style.display = "none"; return; }
-    var url = "message://" + encodeURIComponent("<" + raw + ">");
+    var h = location.hash.slice(1), p = {};
+    if (h.indexOf("=") < 0) { p.m = h; }
+    else h.split("&").forEach(function (kv) {
+      var i = kv.indexOf("="); if (i > 0) p[kv.slice(0, i)] = kv.slice(i + 1);
+    });
+    function dec(s) { try { return decodeURIComponent(s || ""); } catch (e) { return s || ""; } }
+    var m = dec(p.m).trim().replace(/^<|>$/g, ""), u = dec(p.u), g = dec(p.g);
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var btn = document.getElementById("go"), note = document.getElementById("note"), url = "";
+    if (ios && m.indexOf("@") > 0) {
+      url = "message://" + encodeURIComponent("<" + m + ">");
+    } else {
+      var base = "https://mail.google.com/mail/" + (u ? "?authuser=" + encodeURIComponent(u) : "");
+      if (/^[0-9a-f]{10,20}$/i.test(g)) url = base + "#all/" + g;
+      else if (m) url = base + "#search/" + encodeURIComponent("rfc822msgid:" + m);
+    }
+    if (!url) { btn.style.display = "none"; return; }
     btn.href = url;
-    setTimeout(function () { location.href = url; }, 50);
-    setTimeout(function () { note.textContent = "Tap if nothing happened."; }, 1500);
+    if (ios) {
+      setTimeout(function () { location.href = url; }, 50);
+      setTimeout(function () { note.textContent = "Tap if nothing happened."; }, 1500);
+    } else {
+      location.replace(url);
+    }
   })();
 </script>
 </body>
