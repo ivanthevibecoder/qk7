@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>·</title>
+<style>
+  :root { --bg:#f5f5f7; --fg:#1d1d1f; --muted:#6e6e73; --btn:#007aff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#000; --fg:#f5f5f7; --muted:#98989d; --btn:#0a84ff; } }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:var(--bg); color:var(--fg); font:17px -apple-system, system-ui, sans-serif; }
+  main { text-align:center; padding:24px 16px; max-width:360px; }
+  a.btn { display:inline-block; padding:14px 28px; border-radius:14px;
+          background:var(--btn); color:#fff; text-decoration:none; font-weight:600; }
+  p { color:var(--muted); font-size:14px; line-height:1.4; }
+</style>
+</head>
+<body>
+<main>
+  <a class="btn" id="go" href="#">Open</a>
+  <p id="note"></p>
+</main>
+<script>
+  (function () {
+    var raw = "";
+    try { raw = decodeURIComponent(location.hash.slice(1)); } catch (e) { raw = location.hash.slice(1); }
+    raw = raw.trim().replace(/^<|>$/g, "");
+    var btn = document.getElementById("go"), note = document.getElementById("note");
+    if (!raw || raw.indexOf("@") < 0) { btn.style.display = "none"; return; }
+    var url = "message://" + encodeURIComponent("<" + raw + ">");
+    btn.href = url;
+    setTimeout(function () { location.href = url; }, 50);
+    setTimeout(function () { note.textContent = "Tap if nothing happened."; }, 1500);
+  })();
+</script>
+</body>
+</html>
