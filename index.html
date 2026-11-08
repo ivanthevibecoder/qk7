@@ -41,6 +41,17 @@
       if (/^[0-9a-f]{10,20}$/i.test(g)) url = base + "#all/" + g;
       else if (m) url = base + "#search/" + encodeURIComponent("rfc822msgid:" + m);
     }
+    if (p.t && m) {
+      var raw = "<" + m + ">", enc = encodeURIComponent(raw), main = document.querySelector("main");
+      btn.style.display = "none";
+      [["A", "message://" + enc], ["B", "message:" + enc], ["C", "message://" + raw],
+       ["D", "message:" + raw], ["E", "message://" + encodeURIComponent(m)]].forEach(function (v) {
+        var a = document.createElement("a");
+        a.className = "btn"; a.href = v[1]; a.textContent = v[0];
+        a.style.margin = "6px"; main.insertBefore(a, note);
+      });
+      return;
+    }
     if (!url) { btn.style.display = "none"; return; }
     btn.href = url;
     if (ios) {
